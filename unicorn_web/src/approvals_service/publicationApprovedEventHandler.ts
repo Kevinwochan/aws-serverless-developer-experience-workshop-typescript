@@ -31,10 +31,8 @@ class PublicationApprovedFunction {
     console.log(`Property status changed: ${JSON.stringify(event.detail)}`);
     // Construct the entry to insert into database.
     const propertyEvaluation = event.detail;
-
-    // Call publicationApproved with the entry
     try {
-      await this.publicationApproved(propertyEvaluation);
+      // Call publicationApproved with the entry
     } catch (error: any) {
       console.log(`Error during DDB UPDATE: ${JSON.stringify(error)}`);
     }
