@@ -48,21 +48,12 @@ Globals:
     Runtime: nodejs18.x
     MemorySize: 128
     Timeout: 15 
-    Tracing: Active
     Architectures:
       - x86_64
     Environment:
       Variables:
         DYNAMODB_TABLE: !Ref ContractsTable
         SERVICE_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-        POWERTOOLS_LOGGER_CASE: PascalCase
-        POWERTOOLS_SERVICE_NAME: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-        POWERTOOLS_TRACE_DISABLED: "false" # Explicitly disables tracing, default
-        POWERTOOLS_LOGGER_LOG_EVENT: !If [IsProd, "false", "true"] # Logs incoming event, default
-        POWERTOOLS_LOGGER_SAMPLE_RATE: !If [IsProd, "0.1", "0"] # Debug log sampling percentage, default
-        POWERTOOLS_METRICS_NAMESPACE: !Sub "{{resolve:ssm:/uni-prop/${Stage}/UnicornContractsNamespace}}"
-        POWERTOOLS_LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
-        LOG_LEVEL: INFO # Log level for Logger (INFO, DEBUG, etc.), default
     Tags:
       stage: !Ref Stage
       project: !FindInMap [Constants, ProjectName, Value]
@@ -120,7 +111,6 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       LogGroupName: !Sub "/aws/lambda/${ContractEventHandlerFunction}"
-      RetentionInDays: !FindInMap [LogsRetentionPeriodMap, !Ref Stage, Days]
 
   #### API GATEWAY REST API
   UnicornContractsApi:
@@ -130,7 +120,6 @@ Resources:
       StageName: !Ref Stage
       EndpointConfiguration:
         Type: REGIONAL
-      TracingEnabled: true
       MethodSettings:
         - MetricsEnabled: true
           ResourcePath: /*
