@@ -11,7 +11,7 @@ import type { LambdaInterface } from "@aws-lambda-powertools/commons";
 import { MetricUnits } from "@aws-lambda-powertools/metrics";
 import { logger, metrics, tracer } from "./powertools";
 
-// Empty configuration for DynamoDB
+// TODO: Initialize configuration for DynamoDB
 const ddbClient = new DynamoDBClient({});
 const DDB_TABLE = process.env.DYNAMODB_TABLE;
 
@@ -44,7 +44,7 @@ class ContractEventHandlerFunction implements LambdaInterface {
           logger.info("Creating a contract", { contract });
           try {
             // Save the entry.
-            await this.createContract(contract);
+            // TODO action to add DynamoDB implementation
             tracer.putMetadata("ContractStatus", contract);
           } catch (error) {
             tracer.addErrorAsMetadata(error as Error);
@@ -83,58 +83,7 @@ class ContractEventHandlerFunction implements LambdaInterface {
    */
   @tracer.captureMethod()
   private async createContract(contract: ContractDBType): Promise<void> {
-
-    tracer.putAnnotation("property_id", contract.property_id);
-
-    // Construct the DDB Table record
-    logger.info("Constructing DB Entry from contract", { contract });
-    const createDate = new Date();
-    const contractId = randomUUID();
-    const dbEntry: ContractDBType = {
-      property_id: contract["property_id"],
-      contract_created: createDate.toISOString(),
-      contract_last_modified_on: createDate.toISOString(),
-      contract_id: contractId,
-      address: contract["address"],
-      seller_name: contract["seller_name"],
-      contract_status: ContractStatusEnum.DRAFT,
-    };
-
-    // Insert record into DDB
-    logger.info("Record to insert", { dbEntry });
-    // Build the Command objects
-    const ddbPutCommandInput: PutItemCommandInput = {
-      TableName: DDB_TABLE,
-      Item: marshall(dbEntry, { removeUndefinedValues: true }),
-      ConditionExpression: 'attribute_not_exists(property_id) OR attribute_exists(contract_status) AND contract_status IN (:CANCELLED, :CLOSED, :EXPIRED)',
-      ExpressionAttributeValues: {
-        ':CANCELLED': { S: ContractStatusEnum.CANCELLED },
-        ':CLOSED': { S: ContractStatusEnum.CLOSED },
-        ':EXPIRED': { S: ContractStatusEnum.EXPIRED },
-      }
-    };
-    const ddbPutCommand = new PutItemCommand(ddbPutCommandInput);
-
-    // Send the command
-    const ddbPutCommandOutput: PutItemCommandOutput = await ddbClient.send(
-      ddbPutCommand
-    );
-    if (ddbPutCommandOutput.$metadata.httpStatusCode != 200) {
-      let error: ContractError = {
-        propertyId: dbEntry.property_id,
-        name: "ContractDBSaveError",
-        message:
-          "Response error code: " + ddbPutCommandOutput.$metadata.httpStatusCode,
-        object: ddbPutCommandOutput.$metadata,
-      };
-      throw error;
-    }
-
-    logger.info("Inserted record for contract", {
-      contractId,
-      metadata: ddbPutCommandOutput.$metadata,
-    });
-    metrics.addMetric("ContractCreated", MetricUnits.Count, 1);
+    throw Error("Not implemented");
   }
 
   /**
