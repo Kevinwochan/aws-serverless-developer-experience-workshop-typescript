@@ -43,14 +43,11 @@ class ContractStatusChangedFunction {
     context: Context
   ): Promise<void> {
     console.log(`Contract status changed: ${JSON.stringify(event.detail)}`);
-    try {
-      // Construct the entry to insert into database.
-      let statusEntry: ContractStatusChanged = event.detail;
-      console.log(`Unmarshalled entry: ${JSON.stringify(statusEntry)}`);
-      // Call saveContractStatus with the entry
+    // Construct the entry to insert into database.
+    let statusEntry: ContractStatusChanged = event.detail;
 
-      // Build the Command objects
-      await this.saveContractStatus(statusEntry);
+    try {
+      // Call saveContractStatus with the entry
     } catch (error: any) {
       console.log(`Error during DDB UPDATE: ${JSON.stringify(error)}`);
     }
