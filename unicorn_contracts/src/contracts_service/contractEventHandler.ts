@@ -9,7 +9,7 @@ import {
 import { randomUUID } from "crypto";
 
 // TODO: Initialize configuration for DynamoDB
-const ddbClient = new DynamoDBClient({});
+const ddbClient = null;
 const DDB_TABLE = process.env.DYNAMODB_TABLE;
 
 
