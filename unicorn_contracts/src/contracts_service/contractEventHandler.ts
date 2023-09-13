@@ -84,7 +84,7 @@ class ContractEventHandlerFunction {
    * @returns {Promise<void>} - A promise that resolves when the update is complete.
    */
   private async updateContract(contract: ContractDBType): Promise<void> {
-
+    throw Error("Not implemented");
   }
 
   /**
