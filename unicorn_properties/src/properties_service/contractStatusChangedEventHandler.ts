@@ -7,8 +7,6 @@ import {
   UpdateItemCommandInput,
   UpdateItemCommandOutput,
 } from "@aws-sdk/client-dynamodb";
-import { ContractStatusChanged } from "../schema/unicorn_contracts/contractstatuschanged/ContractStatusChanged";
-import { Marshaller } from "../schema/unicorn_contracts/contractstatuschanged/marshaller/Marshaller";
 
 // Empty configuration for DynamoDB
 const ddbClient = new DynamoDBClient({});
@@ -18,6 +16,19 @@ export interface ContractStatusError extends Error {
   contract_id: string;
   name: string;
   object: any;
+}
+
+// Remove ContractStatusChanged type and ContractStatusEnum
+type ContractStatusChanged = {
+  contractLastModifiedOn: string;
+  contractId: string;
+  propertyId: string;
+  contractStatus: ContractStatusEnum;
+};
+
+enum ContractStatusEnum {
+  DRAFT = "DRAFT",
+  APPROVED = "APPROVED",
 }
 
 class ContractStatusChangedFunction {
@@ -34,12 +45,9 @@ class ContractStatusChangedFunction {
     console.log(`Contract status changed: ${JSON.stringify(event.detail)}`);
     try {
       // Construct the entry to insert into database.
-      let statusEntry: ContractStatusChanged = Marshaller.unmarshal(
-        event.detail,
-        "ContractStatusChanged"
-      );
-
+      let statusEntry: ContractStatusChanged = event.detail;
       console.log(`Unmarshalled entry: ${JSON.stringify(statusEntry)}`);
+      // Call saveContractStatus with the entry
 
       // Build the Command objects
       await this.saveContractStatus(statusEntry);
