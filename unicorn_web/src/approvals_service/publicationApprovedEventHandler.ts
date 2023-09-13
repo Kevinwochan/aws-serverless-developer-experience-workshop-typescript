@@ -6,12 +6,16 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
-import { PublicationEvaluationCompleted } from "../schema/unicorn_properties/publicationevaluationcompleted/PublicationEvaluationCompleted";
-import { Marshaller } from "../schema/unicorn_properties/publicationevaluationcompleted/marshaller/Marshaller";
 
 // Empty configuration for DynamoDB
 const ddbClient = new DynamoDBClient({});
 const DDB_TABLE = process.env.DYNAMODB_TABLE;
+
+// Remove PublicationEvaluationCompleted
+type PublicationEvaluationCompleted = {
+  evaluationResult: string;
+  propertyId: string;
+};
 
 class PublicationApprovedFunction {
   /**
@@ -26,10 +30,9 @@ class PublicationApprovedFunction {
   ): Promise<void> {
     console.log(`Property status changed: ${JSON.stringify(event.detail)}`);
     // Construct the entry to insert into database.
-    const propertyEvaluation: PublicationEvaluationCompleted =
-      Marshaller.unmarshal(event.detail, "PublicationEvaluationCompleted");
-    console.log(`Unmarshalled entry: ${JSON.stringify(propertyEvaluation)}`);
+    const propertyEvaluation = event.detail;
 
+    // Call publicationApproved with the entry
     try {
       await this.publicationApproved(propertyEvaluation);
     } catch (error: any) {
