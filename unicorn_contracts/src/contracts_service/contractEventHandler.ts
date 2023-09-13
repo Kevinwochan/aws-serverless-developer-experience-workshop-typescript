@@ -84,50 +84,7 @@ class ContractEventHandlerFunction {
    * @returns {Promise<void>} - A promise that resolves when the update is complete.
    */
   private async updateContract(contract: ContractDBType): Promise<void> {
-    const modifiedDate = new Date();
-    const dbEntry: ContractDBType = {
-      contract_id: contract.contract_id,
-      property_id: contract.property_id,
-      contract_status: ContractStatusEnum.APPROVED,
-      contract_last_modified_on: modifiedDate.toISOString(),
-    };
 
-    console.log("Record to update", { dbEntry })
-    const ddbUpdateCommandInput: UpdateItemCommandInput = {
-      TableName: DDB_TABLE,
-      Key: { property_id: { S: dbEntry.property_id } },
-      UpdateExpression: "set contract_status = :t, modified_date = :m",
-      ConditionExpression: 'attribute_exists(property_id) AND contract_status = :DRAFT',
-      ExpressionAttributeValues: {
-        ":t": { S: dbEntry.contract_status as string },
-        ":m": { S: dbEntry.contract_last_modified_on as string },
-        ':DRAFT': { S: ContractStatusEnum.DRAFT },
-      },
-    };
-
-
-    const ddbUpdateCommand = new UpdateItemCommand(ddbUpdateCommandInput);
-
-    // Send the command
-    const ddbUpdateCommandOutput: UpdateItemCommandOutput = await ddbClient.send(
-      ddbUpdateCommand
-    );
-    if (ddbUpdateCommandOutput.$metadata.httpStatusCode != 200) {
-      const error: ContractError = {
-        propertyId: dbEntry.property_id,
-        name: "ContractDBUpdateError",
-        message:
-          "Response error code: " +
-          ddbUpdateCommandOutput.$metadata.httpStatusCode,
-        object: ddbUpdateCommandOutput.$metadata,
-      };
-      throw error;
-    }
-
-    console.log("Updated record for contract", {
-      contractId: dbEntry.contract_id,
-      metdata: ddbUpdateCommandOutput.$metadata,
-    });
   }
 
   /**
