@@ -1,14 +1,16 @@
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-
 import * as UnicornSharedConstruct from './constructs';
-
 export { UnicornSharedConstruct };
+
+import { ServerlessChecks } from './CdkNagPack/serverless-pack';
+export { ServerlessChecks };
+
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export enum UNICORN_NAMESPACES {
     CONTRACTS = 'unicorn.contracts',
     PROPERTIES = 'unicorn.properties',
     WEB = 'unicorn.web',
-} // should this be direct string
+}
 
 /** The different stages for the app. */
 export enum Stage {
@@ -16,12 +18,6 @@ export enum Stage {
     dev = 'dev',
     prod = 'prod',
 }
-
-// API Contracts
-// Opinionated CDK Constructs
-// Use shared types instead of schemas?
-// Bus to bus, lose control, source chain, pass event id from previous service
-// uidv7/v8 time sortable. propid
 
 export const isProd = (stage: Stage) => stage === Stage.prod;
 
