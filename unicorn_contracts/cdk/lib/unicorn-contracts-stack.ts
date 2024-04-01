@@ -28,7 +28,7 @@ import {
     UnicornSharedConstruct,
 } from 'unicorn_shared';
 import { CfnSchema } from 'aws-cdk-lib/aws-eventschemas';
-import ContractStatusChangedEventSchema from '../integration/ContractStatusChangedEventSchema.json';
+import ContractStatusChangedEventSchema from '../../integration/ContractStatusChangedEventSchema.json';
 
 interface UnicornConstractsStackProps extends StackProps {
     stage: Stage;
@@ -235,12 +235,10 @@ export class UnicornConstractsStack extends Stack {
             {
                 runtime: lambda.Runtime.NODEJS_20_X,
                 handler: 'lambdaHandler',
-                tracing: lambda.Tracing.ACTIVE,
                 entry: path.join(
                     __dirname,
                     '../../src/contracts_service/contractEventHandler.ts'
                 ),
-                logGroup: eventHandlerLogs,
                 environment: {
                     DYNAMODB_TABLE: table.tableName,
                     SERVICE_NAMESPACE: UNICORN_NAMESPACES.CONTRACTS,

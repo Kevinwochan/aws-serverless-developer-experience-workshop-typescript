@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { UnicornConstractsStack } from './unicorn-contracts-stack';
-import { Stage, UNICORN_NAMESPACES } from 'unicorn_shared';
+import { UnicornConstractsStack } from '../lib/unicorn-contracts-stack';
+import { ServerlessChecks, Stage, UNICORN_NAMESPACES } from 'unicorn_shared';
+import { AwsSolutionsChecks } from 'cdk-nag';
 
 const app = new cdk.App();
 
@@ -19,3 +20,5 @@ Object.values(Stage).map((stage) => {
         tags: generateTags(stage),
     });
 });
+cdk.Aspects.of(app).add(new ServerlessChecks());
+
