@@ -19,5 +19,5 @@ Object.values(Stage).map((stage) => {
         tags: generateTags(stage),
     });
 });
-cdk.Aspects.of(app).add(new ServerlessChecks());
+cdk.Aspects.of(app).add(new ServerlessChecks({ verbose: true }));
 
